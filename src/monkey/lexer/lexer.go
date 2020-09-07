@@ -3,24 +3,38 @@ package lexer
 import "monkey/token"
 
 type Lexer struct {
-	input string
+	input    string
 	position int
-	ch byte
+	ch       byte
 }
 
-func New(input string) *Lexer{
+func New(input string) *Lexer {
 	l := &Lexer{input: input}
 	l.readChar()
 	return l
 }
 
-func(l *Lexer) NextToken() token.Token {
+func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 	l.skipWhiteSpaces()
 
 	switch l.ch {
 	case '=':
-		tok = newToken(token.ASSIGN, l.ch)
+		if l.peekChar() == '=' {
+			tok.Literal = "=="
+			tok.Type = token.EQ
+			l.readChar()
+		} else {
+			tok = newToken(token.ASSIGN, l.ch)
+		}
+	case '!':
+		if l.peekChar() == '=' {
+			tok.Literal = "!="
+			tok.Type = token.NOT_EQ
+			l.readChar()
+		} else {
+			tok = newToken(token.BANG, l.ch)
+		}
 	case '+':
 		tok = newToken(token.PLUS, l.ch)
 	case '(':
@@ -35,6 +49,16 @@ func(l *Lexer) NextToken() token.Token {
 		tok = newToken(token.COMMA, l.ch)
 	case ';':
 		tok = newToken(token.SEMICOLON, l.ch)
+	case '-':
+		tok = newToken(token.MINUS, l.ch)
+	case '/':
+		tok = newToken(token.SLASH, l.ch)
+	case '*':
+		tok = newToken(token.ASTERISK, l.ch)
+	case '<':
+		tok = newToken(token.LT, l.ch)
+	case '>':
+		tok = newToken(token.GT, l.ch)
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
@@ -60,7 +84,14 @@ func (l *Lexer) readNumber() string {
 	for isDigit(l.ch) {
 		l.readChar()
 	}
-	return l.input[position:l.position - 1]
+	return l.input[position : l.position-1]
+}
+
+func (l *Lexer) peekChar() byte {
+	if l.position >= len(l.input) {
+		return 0
+	}
+	return l.input[l.position]
 }
 
 func (l *Lexer) skipWhiteSpaces() {
@@ -71,13 +102,13 @@ func (l *Lexer) skipWhiteSpaces() {
 
 func (l *Lexer) readIdentifier() string {
 	position := l.position - 1
-	for isLetter(l.ch){
+	for isLetter(l.ch) {
 		l.readChar()
 	}
-	return l.input[position:l.position-1]
+	return l.input[position : l.position-1]
 }
 
-func(l *Lexer) readChar() {
+func (l *Lexer) readChar() {
 	if l.position >= len(l.input) {
 		l.ch = 0
 	} else {
@@ -85,7 +116,6 @@ func(l *Lexer) readChar() {
 	}
 	l.position += 1
 }
-
 
 func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{Type: tokenType, Literal: string(ch)}
