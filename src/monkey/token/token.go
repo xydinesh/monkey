@@ -8,10 +8,13 @@ type Token struct {
 }
 
 const (
+	// ILLEGAL character special tokens
 	ILLEGAL = "ILLEGAL"
+	//EOF token
 	EOF = "EOF"
-
+	// IDENT for identifier token
 	IDENT = "IDENT"
+	// INT for integer
 	INT = "INT"
 
 	// Operators
