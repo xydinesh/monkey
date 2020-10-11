@@ -275,7 +275,7 @@ func TestIsLetter(t *testing.T) {
 
 	input = `abc_abc`
 	l = New(input)
-	for _ = range input {
+	for range input {
 		if !isLetter(l.ch) {
 			t.Fatalf("expected a letter, got %q", l.ch)
 		}
