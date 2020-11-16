@@ -222,3 +222,43 @@ func (be *Boolean) String() string {
 }
 
 func (ie *Boolean) expressionNode() {}
+
+type IfExpression struct {
+	Token       token.Token // The if token
+	Condition   Expression
+	Consequnece *BlockStatement
+	Alternative *BlockStatement
+}
+
+func (ie *IfExpression) experssionNode() {}
+
+func (ie *IfExpression) TokenLiteral() string { return ie.Token.Literal }
+
+func (ie *IfExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("if")
+	out.WriteString(ie.Condition.String())
+	out.WriteString(" ")
+	out.WriteString(ie.Consequnece.String())
+
+	if ie.Alternative != nil {
+		out.WriteString("else ")
+		out.WriteString(ie.Alternative.String())
+	}
+	return out.String()
+}
+
+type BlockStatement struct {
+	Token      token.Token // the { token
+	Staetments []Statement
+}
+
+func (bs *BlockStatement) statementNode()       {}
+func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
+func (bs *BlockStatement) String() string {
+	var out bytes.Buffer
+	for _, s := range bs.Staetments {
+		out.WriteString(s.String())
+	}
+	return out.String()
+}
